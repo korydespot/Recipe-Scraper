@@ -48,12 +48,15 @@ singredients = test.find('div', {'class': 'recipe-ingredients'}).find_all('li')
 # instructions
 sinstructions = test.find('div', {'itemprop': 'recipeInstructions'}).find_all('p')
 
-for links in linkss.find_all('h3', attrs={'class' : 'r'}):
-    print links.string
 
-#for x in singredients:
-#	string = singredients
-#print (singredients)
+
+#for links in linkss.find_all('h3', attrs={'class' : 'r'}):
+#    print links.string
+
+
+
+
+
 for x in sinstructions:
 	istring = x.get_text()
 	print re.sub(
@@ -73,8 +76,6 @@ for x in singredients:
 					'\n', ' ').replace(
 						'\t', ' '))
 
-#print ingredients  
-#print get_minutes(scook)
 
 
 
