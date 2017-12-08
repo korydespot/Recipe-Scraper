@@ -86,6 +86,8 @@ for x in testlinks:
             b = urllib2.urlopen(a).read()
             c = BeautifulSoup(b, "html.parser")
             d = c.find('span', {'class': 'preptime'})
+            if(d == None):
+                continue
             e = c.find('span', {'class': 'cooktime'})
             if(e == None):
                 continue
