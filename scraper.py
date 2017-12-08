@@ -1,6 +1,15 @@
+#!/usr/bin/python
+
+#import pg
+
+#conn = pg.DB(host="localhost", user= )
+
+#result = conn.query("SELECT * FROM *")
+
 import re
 from functools import wraps
 import urllib2
+import time
 
 from bs4 import BeautifulSoup
 
@@ -25,68 +34,68 @@ def normalize_string(strings):
 		'\n', ' ').replace(
 		'\t', ' ').strip()
 		)
+# this section prints out data
+
+def listinfo(sinstructions, singredients,cooktime,preptime,source):
+    print source
+    print get_minutes(preptime)
+    print get_minutes(cooktime)
+    for x in sinstructions:
+	    istring = x.get_text()
+	    print re.sub(
+			    r'\s+', ' ',
+			    istring.replace(
+				    'xa0', ' ').replace(  # &nbsp;
+					    '\n', ' ').replace(
+						    '\t', ' '))
+
+
+    for x in singredients:
+	    string = x.get_text()
+	    print re.sub(
+			    r'\s+', ' ',
+			    string.replace(
+				    'xa0', ' ').replace(  # &nbsp;
+					    '\n', ' ').replace(
+    						    '\t', ' '))
 
 
 
 HEADERS = { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36' }
 
-request = urllib2.Request('http://www.simplyrecipes.com/recipes/beef_chili_mac_and_cheese', headers=HEADERS)
-url = urllib2.urlopen(request).read()
-
-requestl = urllib2.Request('http://www.simplyrecipes.com/?s', headers=HEADERS)
-lurl = urllib2.urlopen(requestl).read()
-
-test = BeautifulSoup(url, "html.parser")
-linkss = BeautifulSoup(lurl, "html.parser")
-#print test
-# preptime 
-sprep = test.find('span', {'class': 'preptime'})  
-# cooktime
-scook = test.find('span', {'class': 'cooktime'})  
-# ingredients
-singredients = test.find('div', {'class': 'recipe-ingredients'}).find_all('li')
-# instructions
-sinstructions = test.find('div', {'itemprop': 'recipeInstructions'}).find_all('p')
 
 
+#testing to get other recipie's links from index
+linksrequest = urllib2.Request('http://www.simplyrecipes.com/index/', headers=HEADERS)
+rurl = urllib2.urlopen(linksrequest).read()
+links = BeautifulSoup(rurl, "html.parser")
 
-#for links in linkss.find_all('h3', attrs={'class' : 'r'}):
-#    print links.string
+testlinks = links.find('div', {'id':'recipe-index-list'}).find_all('a', attrs={'href': re.compile("^http://")}) 
 
+d = []
 
-
-
-
-for x in sinstructions:
-	istring = x.get_text()
-	print re.sub(
-			r'\s+', ' ',
-			istring.replace(
-				'xa0', ' ').replace(  # &nbsp;
-					'\n', ' ').replace(
-						'\t', ' '))
-
-
-for x in singredients:
-	string = x.get_text()
-	print re.sub(
-			r'\s+', ' ',
-			string.replace(
-				'xa0', ' ').replace(  # &nbsp;
-					'\n', ' ').replace(
-						'\t', ' '))
-
-
-
-
+for x in testlinks:
+        time.sleep(.3)
+        t = urllib2.Request(x.get('href'), headers=HEADERS)
+        ur = urllib2.urlopen(t).read()
+        l = BeautifulSoup(ur,"html.parser")
+        v = l.find('li', {'itemprop': 'itemListElement'}).find_all('a', attrs={'href': re.compile("^http://")})
+        for i in v:
+            source = i.get('href');
+            a = urllib2.Request(i.get('href'), headers=HEADERS)
+            b = urllib2.urlopen(a).read()
+            c = BeautifulSoup(b, "html.parser")
+            d = c.find('span', {'class': 'preptime'})
+            e = c.find('span', {'class': 'cooktime'})
+            if(e == None):
+                continue
+            f = c.find('div', {'class': 'recipe-ingredients'}).find_all('li')
+            g = c.find('div', {'itemprop': 'recipeInstructions'}).find_all('p')
+            listinfo(sinstructions=g,singredients=f,cooktime=e,preptime=d,source=source)
+        
 
 
-
-
-
-
-
-
+exit()
 
 
 
