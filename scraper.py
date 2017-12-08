@@ -1,4 +1,3 @@
-#!/usr/bin/python
 
 #import pg
 
@@ -17,7 +16,7 @@ from bs4 import BeautifulSoup
 TIME_REGEX = re.compile(
 		r'(\D*(?P<hours>\d+)\s*(hours|hrs|hr|h|Hours|H))?(\D*(?P<minutes>\d+)\s*(minutes|mins|min|m|Minutes|M))?'
 )
-
+ningred = 0
 
 def get_minutes(line):
 	string = line.get_text()
@@ -81,7 +80,11 @@ for x in testlinks:
         l = BeautifulSoup(ur,"html.parser")
         v = l.find('li', {'itemprop': 'itemListElement'}).find_all('a', attrs={'href': re.compile("^http://")})
         for i in v:
+            time.sleep(.3)
             source = i.get('href');
+            rname = source.split("/",5)[4]
+            rname = rname.replace("_", " ")
+            print rname
             a = urllib2.Request(i.get('href'), headers=HEADERS)
             b = urllib2.urlopen(a).read()
             c = BeautifulSoup(b, "html.parser")
